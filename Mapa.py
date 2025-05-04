@@ -90,6 +90,6 @@ with tab3:
         waypoints = [obtener_coords(p) for p in paradas]
 
         key = "AIzaSyD-HxXkhbhuFrfpNbmmVL80hMgFMv66pVI" 
-        url = f"https://www.google.com/maps/dir/?api=1&origin={origin}&destination={destination}&waypoints={'|'.join(waypoints)}"
+        url = f"{https://www.google.com/maps/dir/?api=1&origin={origin}&destination={destination}&waypoints={'|'.join(waypoints)}}"
 
         st.markdown(f"[Abrir ruta optimizada en Google Maps]({url})", unsafe_allow_html=False)
