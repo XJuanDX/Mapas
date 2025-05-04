@@ -1,7 +1,6 @@
 streamlit
 pandas
-thinkers
+os
 csv
 urlib.parse
-ttkthemes
 webbrowser
