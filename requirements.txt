@@ -3,3 +3,5 @@ pandas
 os
 csv
 urlib.parse
+requests
+ttkthemes
