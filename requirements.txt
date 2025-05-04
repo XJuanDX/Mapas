@@ -3,4 +3,3 @@ pandas
 os
 csv
 urlib.parse
-webbrowser
