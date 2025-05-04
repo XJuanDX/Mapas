@@ -92,4 +92,4 @@ with tab3:
         key = "AIzaSyD-HxXkhbhuFrfpNbmmVL80hMgFMv66pVI" 
         url = f"https://www.google.com/maps/dir/?api=1&origin={origin}&destination={destination}&waypoints={'|'.join(waypoints)}"
 
-        st.markdown(f"[Abrir ruta optimizada en Google Maps] ({url})", unsafe_allow_html=false)
+        st.markdown(f"[Abrir ruta optimizada en Google Maps] ({url})", unsafe_allow_html=False)
