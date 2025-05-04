@@ -2,6 +2,7 @@ import streamlit as st
 import csv
 import os
 import requests
+import webbrowser
 from urllib.parse import urlparse, parse_qs
 
 # ---------- Funciones ----------
@@ -37,7 +38,57 @@ def cargar_clientes():
         reader = csv.reader(f)
         next(reader)
         return list(reader)
-
+# Función para calcular la ruta
+def calcular_ruta():
+    inicio = combobox_inicio.get()
+    fin = combobox_fin.get()
+    if not inicio or not fin:
+        messagebox.showwarning("Advertencia", "Seleccione un punto de inicio y fin.")
+        return
+    
+    paradas_seleccionadas = []
+    with open('clientes.csv', mode='r', encoding='utf-8') as archivo:
+        lector = csv.reader(archivo)
+        next(lector)
+        clientes = list(lector)
+    
+    for i, var in enumerate(check_vars):
+        if var.get() == 1:
+            paradas_seleccionadas.append(f"{clientes[i][0]} ({clientes[i][1]}, {clientes[i][2]})")
+    
+    inicio_coords = fin_coords = None
+    paradas_coords = []
+    for cliente in clientes:
+        nombre_cliente = f"{cliente[0]} ({cliente[1]}, {cliente[2]})"
+        if nombre_cliente == inicio:
+            inicio_coords = f"{cliente[1]},{cliente[2]}"
+        if nombre_cliente == fin:
+            fin_coords = f"{cliente[1]},{cliente[2]}"
+        if nombre_cliente in paradas_seleccionadas:
+            paradas_coords.append(f"{cliente[1]},{cliente[2]}")
+    
+    if not inicio_coords or not fin_coords:
+        messagebox.showerror("Error", "No se encontraron coordenadas de inicio o fin.")
+        return
+    
+    api_key = "AIzaSyD-HxXkhbhuFrfpNbmmVL80hMgFMv66pVI"  # Reemplaza con tu API key
+    url = f"https://maps.googleapis.com/maps/api/directions/json?origin={inicio_coords}&destination={fin_coords}&waypoints=optimize:true|{'|'.join(paradas_coords)}&key={api_key}"
+    respuesta = requests.get(url).json()
+    
+    if respuesta['status'] == 'OK':
+        ruta = respuesta['routes'][0]
+        orden_paradas = ruta['waypoint_order']
+        paradas_ordenadas = [paradas_coords[i] for i in orden_paradas]
+        
+        lista_orden.delete(0, tk.END)
+        lista_orden.insert(tk.END, "Orden de paradas optimizado:")
+        for i, p in enumerate(orden_paradas):
+            lista_orden.insert(tk.END, f"{i+1}. {paradas_seleccionadas[p]}")
+        
+        enlace_maps = f"https://www.google.com/maps/dir/?api=1&origin={inicio_coords}&destination={fin_coords}&waypoints={'|'.join(paradas_ordenadas)}"
+        webbrowser.open(enlace_maps)
+    else:
+        messagebox.showerror("Error", "No se pudo calcular la ruta.")
 # ---------- Interfaz ----------
 
 st.title("Registro de Clientes y Optimización de Ruta")
@@ -90,6 +141,6 @@ with tab3:
         waypoints = [obtener_coords(p) for p in paradas]
 
         key = "AIzaSyD-HxXkhbhuFrfpNbmmVL80hMgFMv66pVI" 
-        url = f"{https://www.google.com/maps/dir/?api=1&origin={origin}&destination={destination}&waypoints={'|'.join(waypoints)}}"
+        url = f"https://www.google.com/maps/dir/?api=1&origin={origin}&destination={destination}&waypoints={'|'.join(waypoints)}"
 
         st.markdown(f"[Abrir ruta optimizada en Google Maps]({url})", unsafe_allow_html=False)
